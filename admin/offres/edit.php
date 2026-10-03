@@ -31,21 +31,29 @@ if (!$offre) {
 }
 
 /* Données nécessaires aux listes */
-$entreprises = $pdo
-    ->query("SELECT id, nom FROM entreprise ORDER BY nom")
-    ->fetchAll();
+$stmtEntreprises = $pdo->prepare(
+    "SELECT id, nom FROM entreprise ORDER BY nom"
+);
+$stmtEntreprises->execute();
+$entreprises = $stmtEntreprises->fetchAll();
 
-$secteurs = $pdo
-    ->query("SELECT id, libelle FROM secteur ORDER BY libelle")
-    ->fetchAll();
+$stmtSecteurs = $pdo->prepare(
+    "SELECT id, libelle FROM secteur ORDER BY libelle"
+);
+$stmtSecteurs->execute();
+$secteurs = $stmtSecteurs->fetchAll();
 
-$villes = $pdo
-    ->query("SELECT id, libelle FROM ville ORDER BY libelle")
-    ->fetchAll();
+$stmtVilles = $pdo->prepare(
+    "SELECT id, libelle FROM ville ORDER BY libelle"
+);
+$stmtVilles->execute();
+$villes = $stmtVilles->fetchAll();
 
-$types = $pdo
-    ->query("SELECT id, libelle FROM type_contrat ORDER BY libelle")
-    ->fetchAll();
+$stmtTypesContrat = $pdo->prepare(
+    "SELECT id, libelle FROM type_contrat ORDER BY libelle"
+);
+$stmtTypesContrat->execute();
+$typesContrat = $stmtTypesContrat->fetchAll();
 
 $msg = '';
 $err = '';
@@ -162,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php endif; ?>
 
 <form method="post">
-
+   <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Session::csrfToken()) ?>">
     <p>
         <label>Titre</label><br>
         <input

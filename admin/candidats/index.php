@@ -9,8 +9,8 @@ AdminAuth::requireLogin();
 
 $pdo = (new Database())->getConnection();
 
-$rows = $pdo->query("
-    SELECT 
+$stmt = $pdo->prepare("
+    SELECT
         c.id,
         c.nom,
         c.prenom,
@@ -22,7 +22,11 @@ $rows = $pdo->query("
     FROM candidat c
     LEFT JOIN ville v ON c.id_ville = v.id
     ORDER BY c.id DESC
-")->fetchAll();
+");
+
+$stmt->execute();
+
+$rows = $stmt->fetchAll();
 
 ?>
 

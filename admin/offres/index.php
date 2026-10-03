@@ -9,7 +9,7 @@ AdminAuth::requireLogin();
 
 $pdo = (new Database())->getConnection();
 
-$r = $pdo->query("
+$stmt = $pdo->prepare("
     SELECT
         o.id,
         o.titre,
@@ -19,7 +19,11 @@ $r = $pdo->query("
     FROM offre o
     JOIN entreprise e ON o.id_entreprise = e.id
     ORDER BY o.id DESC
-")->fetchAll();
+");
+
+$stmt->execute();
+
+$r = $stmt->fetchAll();
 
 ?>
 

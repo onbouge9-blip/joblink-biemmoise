@@ -11,7 +11,10 @@ $pdo = (new Database())->getConnection();
 
 $erreur = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') { if (!Session::verifyCsrf($_POST['csrf_token'] ?? null)) {
+    http_response_code(403);
+    exit('Requête invalide.');
+}
 
     $libelle = trim($_POST['libelle'] ?? '');
 
@@ -78,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php endif; ?>
 
 <form method="post">
-
+<input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Session::csrfToken()) ?>">
     <label for="libelle">
         Libellé de la ville :
     </label>

@@ -31,19 +31,26 @@ if (!$entreprise) {
 }
 
 /* Récupération des secteurs et villes */
-$secteurs = $pdo
-    ->query("SELECT id, libelle FROM secteur ORDER BY libelle")
-    ->fetchAll();
+$stmtSecteurs = $pdo->prepare(
+    "SELECT id, libelle FROM secteur ORDER BY libelle"
+);
+$stmtSecteurs->execute();
+$secteurs = $stmtSecteurs->fetchAll();
 
-$villes = $pdo
-    ->query("SELECT id, libelle FROM ville ORDER BY libelle")
-    ->fetchAll();
+$stmtVilles = $pdo->prepare(
+    "SELECT id, libelle FROM ville ORDER BY libelle"
+);
+$stmtVilles->execute();
+$villes = $stmtVilles->fetchAll();
 
 $msg = '';
 $err = '';
 
 /* Traitement du formulaire */
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') { if (!Session::verifyCsrf($_POST['csrf_token'] ?? null)) {
+    http_response_code(403);
+    exit('Requête invalide.');
+}
 
     $nom = trim($_POST['nom'] ?? '');
     $email = trim($_POST['email'] ?? '');
@@ -120,6 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php endif; ?>
 
 <form method="post">
+   <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Session::csrfToken()) ?>">
 
     <p>
         <label>Nom de l'entreprise</label><br>

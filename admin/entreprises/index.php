@@ -8,7 +8,7 @@ AdminAuth::requireLogin();
 
 $pdo = (new Database())->getConnection();
 
-$r = $pdo->query("
+$stmt = $pdo->prepare("
     SELECT
         e.id,
         e.nom,
@@ -21,7 +21,11 @@ $r = $pdo->query("
     JOIN secteur s ON e.id_secteur = s.id
     JOIN ville v ON e.id_ville = v.id
     ORDER BY e.nom
-")->fetchAll();
+");
+
+$stmt->execute();
+
+$r = $stmt->fetchAll();
 ?>
 
 <!doctype html>

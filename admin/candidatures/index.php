@@ -15,7 +15,10 @@ $pdo = (new Database())->getConnection();
 |--------------------------------------------------------------------------
 */
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') { if (!Session::verifyCsrf($_POST['csrf_token'] ?? null)) {
+    http_response_code(403);
+    exit('Requête invalide.');
+}
 
     $id = isset($_POST['id']) ? (int) $_POST['id'] : 0;
     $statut = $_POST['statut'] ?? '';
@@ -47,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 |--------------------------------------------------------------------------
 */
 
-$rows = $pdo->query("
+$stmt = $pdo->prepare("
     SELECT
         c.id,
         c.statut,
@@ -62,7 +65,11 @@ $rows = $pdo->query("
     JOIN offre o ON c.id_offre = o.id
     JOIN entreprise e ON o.id_entreprise = e.id
     ORDER BY c.date_candidature DESC
-")->fetchAll();
+");
+
+$stmt->execute();
+
+$rows = $stmt->fetchAll();
 
 ?>
 
@@ -116,7 +123,7 @@ $rows = $pdo->query("
             <td>
 
                 <form method="post">
-
+                      <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(Session::csrfToken()) ?>">
                     <input
                         type="hidden"
                         name="id"

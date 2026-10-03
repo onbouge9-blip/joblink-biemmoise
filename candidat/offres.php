@@ -135,24 +135,29 @@ $offres = $q->fetchAll(PDO::FETCH_ASSOC);
 | Données nécessaires aux filtres
 |--------------------------------------------------------------------------
 */
-
-$secteurs = $pdo->query(
+$stmtSecteurs = $pdo->prepare(
     "SELECT id, libelle
      FROM secteur
      ORDER BY libelle"
-)->fetchAll(PDO::FETCH_ASSOC);
+);
+$stmtSecteurs->execute();
+$secteurs = $stmtSecteurs->fetchAll(PDO::FETCH_ASSOC);
 
-$villes = $pdo->query(
+$stmtVilles = $pdo->prepare(
     "SELECT id, libelle
      FROM ville
      ORDER BY libelle"
-)->fetchAll(PDO::FETCH_ASSOC);
+);
+$stmtVilles->execute();
+$villes = $stmtVilles->fetchAll(PDO::FETCH_ASSOC);
 
-$types = $pdo->query(
+$stmtTypes = $pdo->prepare(
     "SELECT id, libelle
      FROM type_contrat
      ORDER BY libelle"
-)->fetchAll(PDO::FETCH_ASSOC);
+);
+$stmtTypes->execute();
+$types = $stmtTypes->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
@@ -202,7 +207,7 @@ $types = $pdo->query(
             <?php foreach ($secteurs as $x): ?>
 
                 <option
-                    value="<?= $x['id'] ?>"
+                  value="<?= (int)$x['id'] ?>"
                     <?= $sec == $x['id'] ? 'selected' : '' ?>
                 >
                     <?= htmlspecialchars($x['libelle']) ?>
@@ -223,7 +228,7 @@ $types = $pdo->query(
             <?php foreach ($villes as $x): ?>
 
                 <option
-                    value="<?= $x['id'] ?>"
+                    value="<?= (int)$x['id'] ?>"
                     <?= $ville == $x['id'] ? 'selected' : '' ?>
                 >
                     <?= htmlspecialchars($x['libelle']) ?>
@@ -244,7 +249,7 @@ $types = $pdo->query(
             <?php foreach ($types as $x): ?>
 
                 <option
-                    value="<?= $x['id'] ?>"
+                    value="<?= (int)$x['id'] ?>"
                     <?= $type == $x['id'] ? 'selected' : '' ?>
                 >
                     <?= htmlspecialchars($x['libelle']) ?>
@@ -316,7 +321,7 @@ $types = $pdo->query(
                     ...
                 </p>
 
-                <a href="offre.php?id=<?= $o['id'] ?>">
+                <a href="offre.php?id=<?= (int)$o['id'] ?>">
                     Voir l'offre
                 </a>
 
