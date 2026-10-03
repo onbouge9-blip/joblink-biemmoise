@@ -1,0 +1,4 @@
+/config/database.php
+/uploads/cv/*
+.DS_Store
+Thumbs.db

@@ -1,0 +1,1 @@
+<?php require_once __DIR__.'/../classes/Session.php';Session::destroy();header('Location: login.php');exit;
