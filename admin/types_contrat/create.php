@@ -9,31 +9,6 @@ AdminAuth::requireLogin();
 
 $pdo = (new Database())->getConnection();
 
-$id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
-
-if ($id <= 0) {
-    header('Location: index.php');
-    exit;
-}
-
-// Récupérer le secteur
-$stmt = $pdo->prepare("
-    SELECT id, libelle
-    FROM secteur
-    WHERE id = :id
-");
-
-$stmt->execute([
-    'id' => $id
-]);
-
-$secteur = $stmt->fetch();
-
-if (!$secteur) {
-    header('Location: index.php');
-    exit;
-}
-
 $erreur = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -42,40 +17,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($libelle === '') {
 
-        $erreur = 'Le libellé du secteur est obligatoire.';
+        $erreur = 'Le libellé du type de contrat est obligatoire.';
 
     } else {
 
-        // Vérifier qu'un autre secteur n'utilise pas déjà ce libellé
+        // Vérifier si le type de contrat existe déjà
         $stmt = $pdo->prepare("
             SELECT id
-            FROM secteur
+            FROM type_contrat
             WHERE libelle = :libelle
-            AND id <> :id
             LIMIT 1
         ");
 
         $stmt->execute([
-            'libelle' => $libelle,
-            'id' => $id
+            'libelle' => $libelle
         ]);
 
         if ($stmt->fetch()) {
 
-            $erreur = 'Ce secteur existe déjà.';
+            $erreur = 'Ce type de contrat existe déjà.';
 
         } else {
 
-            // Modifier le secteur
+            // Ajouter le type de contrat
             $stmt = $pdo->prepare("
-                UPDATE secteur
-                SET libelle = :libelle
-                WHERE id = :id
+                INSERT INTO type_contrat (libelle)
+                VALUES (:libelle)
             ");
 
             $stmt->execute([
-                'libelle' => $libelle,
-                'id' => $id
+                'libelle' => $libelle
             ]);
 
             header('Location: index.php');
@@ -91,12 +62,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <head>
     <meta charset="UTF-8">
-    <title>Modifier un secteur - JobLink Bénin</title>
+    <title>Ajouter un type de contrat - JobLink Bénin</title>
 </head>
 
 <body>
 
-<h1>Modifier un secteur</h1>
+<h1>Ajouter un type de contrat</h1>
 
 <?php if ($erreur !== ''): ?>
 
@@ -109,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <form method="post">
 
     <label for="libelle">
-        Libellé du secteur :
+        Libellé du type de contrat :
     </label>
 
     <br>
@@ -120,13 +91,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         name="libelle"
         maxlength="100"
         required
-        value="<?= htmlspecialchars($_POST['libelle'] ?? $secteur['libelle']) ?>"
+        value="<?= htmlspecialchars($_POST['libelle'] ?? '') ?>"
     >
 
     <br><br>
 
     <button type="submit">
-        Enregistrer les modifications
+        Ajouter
     </button>
 
 </form>
@@ -134,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <br>
 
 <a href="index.php">
-    ← Retour aux secteurs
+    ← Retour aux types de contrat
 </a>
 
 </body>

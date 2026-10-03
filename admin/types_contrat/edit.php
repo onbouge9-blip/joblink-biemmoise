@@ -16,10 +16,10 @@ if ($id <= 0) {
     exit;
 }
 
-// Récupérer le secteur
+// Récupérer le type de contrat
 $stmt = $pdo->prepare("
     SELECT id, libelle
-    FROM secteur
+    FROM type_contrat
     WHERE id = :id
 ");
 
@@ -27,9 +27,9 @@ $stmt->execute([
     'id' => $id
 ]);
 
-$secteur = $stmt->fetch();
+$type = $stmt->fetch();
 
-if (!$secteur) {
+if (!$type) {
     header('Location: index.php');
     exit;
 }
@@ -42,14 +42,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($libelle === '') {
 
-        $erreur = 'Le libellé du secteur est obligatoire.';
+        $erreur = 'Le libellé du type de contrat est obligatoire.';
 
     } else {
 
-        // Vérifier qu'un autre secteur n'utilise pas déjà ce libellé
+        // Vérifier qu'un autre type de contrat n'utilise pas déjà ce libellé
         $stmt = $pdo->prepare("
             SELECT id
-            FROM secteur
+            FROM type_contrat
             WHERE libelle = :libelle
             AND id <> :id
             LIMIT 1
@@ -62,13 +62,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($stmt->fetch()) {
 
-            $erreur = 'Ce secteur existe déjà.';
+            $erreur = 'Ce type de contrat existe déjà.';
 
         } else {
 
-            // Modifier le secteur
+            // Modifier le type de contrat
             $stmt = $pdo->prepare("
-                UPDATE secteur
+                UPDATE type_contrat
                 SET libelle = :libelle
                 WHERE id = :id
             ");
@@ -91,12 +91,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <head>
     <meta charset="UTF-8">
-    <title>Modifier un secteur - JobLink Bénin</title>
+    <title>Modifier un type de contrat - JobLink Bénin</title>
 </head>
 
 <body>
 
-<h1>Modifier un secteur</h1>
+<h1>Modifier un type de contrat</h1>
 
 <?php if ($erreur !== ''): ?>
 
@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <form method="post">
 
     <label for="libelle">
-        Libellé du secteur :
+        Libellé du type de contrat :
     </label>
 
     <br>
@@ -120,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         name="libelle"
         maxlength="100"
         required
-        value="<?= htmlspecialchars($_POST['libelle'] ?? $secteur['libelle']) ?>"
+        value="<?= htmlspecialchars($_POST['libelle'] ?? $type['libelle']) ?>"
     >
 
     <br><br>
@@ -134,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <br>
 
 <a href="index.php">
-    ← Retour aux secteurs
+    ← Retour aux types de contrat
 </a>
 
 </body>

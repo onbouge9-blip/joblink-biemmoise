@@ -11,32 +11,34 @@ $pdo = (new Database())->getConnection();
 
 $stmt = $pdo->prepare("
     SELECT id, libelle
-    FROM secteur
+    FROM type_contrat
     ORDER BY libelle ASC
 ");
 
 $stmt->execute();
 
-$secteurs = $stmt->fetchAll();
+$typesContrat = $stmt->fetchAll();
 
 ?>
 
 <!doctype html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
-    <title>Secteurs - JobLink Bénin</title>
+    <title>Types de contrat - JobLink Bénin</title>
 </head>
 
 <body>
 
-<h1>Gestion des secteurs</h1>
+<h1>Gestion des types de contrat</h1>
 
 <p>
-    <a href="create.php">➕ Ajouter un secteur</a>
+    <a href="create.php">➕ Ajouter un type de contrat</a>
 </p>
 
 <table border="1" cellpadding="8">
+
     <thead>
         <tr>
             <th>ID</th>
@@ -47,41 +49,49 @@ $secteurs = $stmt->fetchAll();
 
     <tbody>
 
-    <?php foreach ($secteurs as $secteur): ?>
+    <?php foreach ($typesContrat as $type): ?>
 
         <tr>
+
             <td>
-                <?= (int) $secteur['id'] ?>
+                <?= (int) $type['id'] ?>
             </td>
 
             <td>
-                <?= htmlspecialchars($secteur['libelle']) ?>
+                <?= htmlspecialchars($type['libelle']) ?>
             </td>
 
             <td>
-                <a href="edit.php?id=<?= (int) $secteur['id'] ?>">
+
+                <a href="edit.php?id=<?= (int) $type['id'] ?>">
                     ✏️ Modifier
                 </a>
 
                 |
 
                 <a
-                    href="delete.php?id=<?= (int) $secteur['id'] ?>"
-                    onclick="return confirm('Voulez-vous vraiment supprimer ce secteur ?');"
+                    href="delete.php?id=<?= (int) $type['id'] ?>"
+                    onclick="return confirm('Voulez-vous vraiment supprimer ce type de contrat ?');"
                 >
                     🗑️ Supprimer
                 </a>
+
             </td>
+
         </tr>
 
     <?php endforeach; ?>
 
     </tbody>
+
 </table>
 
 <br>
 
-<a href="../dashboard.php">← Retour au dashboard</a>
+<a href="../dashboard.php">
+    ← Retour au dashboard
+</a>
 
 </body>
+
 </html>

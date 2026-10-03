@@ -16,10 +16,10 @@ if ($id <= 0) {
     exit;
 }
 
-// Récupérer le secteur
+// Récupérer la ville
 $stmt = $pdo->prepare("
     SELECT id, libelle
-    FROM secteur
+    FROM ville
     WHERE id = :id
 ");
 
@@ -27,9 +27,9 @@ $stmt->execute([
     'id' => $id
 ]);
 
-$secteur = $stmt->fetch();
+$ville = $stmt->fetch();
 
-if (!$secteur) {
+if (!$ville) {
     header('Location: index.php');
     exit;
 }
@@ -42,14 +42,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($libelle === '') {
 
-        $erreur = 'Le libellé du secteur est obligatoire.';
+        $erreur = 'Le libellé de la ville est obligatoire.';
 
     } else {
 
-        // Vérifier qu'un autre secteur n'utilise pas déjà ce libellé
+        // Vérifier qu'une autre ville n'utilise pas déjà ce libellé
         $stmt = $pdo->prepare("
             SELECT id
-            FROM secteur
+            FROM ville
             WHERE libelle = :libelle
             AND id <> :id
             LIMIT 1
@@ -62,13 +62,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($stmt->fetch()) {
 
-            $erreur = 'Ce secteur existe déjà.';
+            $erreur = 'Cette ville existe déjà.';
 
         } else {
 
-            // Modifier le secteur
+            // Modifier la ville
             $stmt = $pdo->prepare("
-                UPDATE secteur
+                UPDATE ville
                 SET libelle = :libelle
                 WHERE id = :id
             ");
@@ -91,12 +91,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <head>
     <meta charset="UTF-8">
-    <title>Modifier un secteur - JobLink Bénin</title>
+    <title>Modifier une ville - JobLink Bénin</title>
 </head>
 
 <body>
 
-<h1>Modifier un secteur</h1>
+<h1>Modifier une ville</h1>
 
 <?php if ($erreur !== ''): ?>
 
@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <form method="post">
 
     <label for="libelle">
-        Libellé du secteur :
+        Libellé de la ville :
     </label>
 
     <br>
@@ -120,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         name="libelle"
         maxlength="100"
         required
-        value="<?= htmlspecialchars($_POST['libelle'] ?? $secteur['libelle']) ?>"
+        value="<?= htmlspecialchars($_POST['libelle'] ?? $ville['libelle']) ?>"
     >
 
     <br><br>
@@ -134,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <br>
 
 <a href="index.php">
-    ← Retour aux secteurs
+    ← Retour aux villes
 </a>
 
 </body>
